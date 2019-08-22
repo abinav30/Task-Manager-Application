@@ -52,11 +52,11 @@ var auth = function (req, res, next) { return __awaiter(_this, void 0, void 0, f
                 token = token.replace("Bearer", '').trim();
                 return [4 /*yield*/, jsonwebtoken_1.default.verify(token, 'thisismyapp')
                     //@ts-ignore
+                    //console.log(decoded)
+                    //@ts-ignore
                 ];
             case 1:
                 decoded = _a.sent();
-                //@ts-ignore
-                console.log(decoded);
                 return [4 /*yield*/, User_1.default.findOne({ _id: decoded._id, 'tokens.token': token })];
             case 2:
                 user = _a.sent();

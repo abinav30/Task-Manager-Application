@@ -16,7 +16,7 @@ const auth:any = async (req:credential,res:express.Response,next:any)=>{
 
             const decoded =await  jwt.verify(token,'thisismyapp')
             //@ts-ignore
-            console.log(decoded)
+            //console.log(decoded)
             //@ts-ignore
 
             const user =await User.findOne({_id:decoded._id,'tokens.token':token})

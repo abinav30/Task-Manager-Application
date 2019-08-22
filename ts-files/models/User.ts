@@ -2,6 +2,7 @@ import mongoose,{Schema,Model} from 'mongoose';
 import validator from 'validator';
 import  { IUser } from'./IUser'
 import jwt from 'jsonwebtoken'
+import Task from "./Task"
 const charValidator= (str:string)=>{
     return new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g).test(str);
 
@@ -56,7 +57,10 @@ const UserSchema:Schema=new Schema({
         }
     }]
 
-});
+}
+,{
+    timestamps:true,
+    });
 
 //hashes password before saving
 UserSchema.pre<IUser>('save',async function(next){
@@ -72,6 +76,17 @@ UserSchema.pre<IUser>('save',async function(next){
     console.log('just before save');
     next()
 } );
+
+//Delete tasks of a user before a user is removed
+
+UserSchema.pre<IUser>('remove',async function(next){
+    const user=this;
+    await Task.deleteMany({owner:user._id})
+    next()
+
+
+
+})
 
 //Verifies is a user is present by credentials
 UserSchema.statics.findByCredentials=async (email:string,password:string)=>{

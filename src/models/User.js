@@ -49,6 +49,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = __importStar(require("mongoose"));
 var validator_1 = __importDefault(require("validator"));
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var Task_1 = __importDefault(require("./Task"));
 var charValidator = function (str) {
     return new RegExp(/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g).test(str);
 };
@@ -95,6 +96,8 @@ var UserSchema = new mongoose_1.Schema({
                 required: true
             }
         }]
+}, {
+    timestamps: true,
 });
 //hashes password before saving
 UserSchema.pre('save', function (next) {
@@ -112,6 +115,23 @@ UserSchema.pre('save', function (next) {
                     _b.label = 2;
                 case 2:
                     console.log('just before save');
+                    next();
+                    return [2 /*return*/];
+            }
+        });
+    });
+});
+//Delete tasks of a user before a user is removed
+UserSchema.pre('remove', function (next) {
+    return __awaiter(this, void 0, void 0, function () {
+        var user;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    user = this;
+                    return [4 /*yield*/, Task_1.default.deleteMany({ owner: user._id })];
+                case 1:
+                    _a.sent();
                     next();
                     return [2 /*return*/];
             }

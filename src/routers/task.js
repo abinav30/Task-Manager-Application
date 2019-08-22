@@ -77,27 +77,63 @@ taskRouter.post('/tasks', auth_1.default, function (req, res) { return __awaiter
         }
     });
 }); });
-taskRouter.get('/tasks', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-    var tasks, e_2;
+taskRouter.get('/tasks', auth_1.default, function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var match, sort, str, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, Task_1.default.find({})];
+                match = {};
+                sort = {};
+                if (req.query.completed) {
+                    match.completed = req.query.completed === 'true';
+                }
+                ;
+                if (req.query.sortBy) {
+                    str = req.query.sortBy.split(':');
+                    //const key = str[0]
+                    if (str[1] === 'asc') {
+                        sort[str[0]] = 1;
+                    }
+                    else if (str[1] === 'desc') {
+                        sort[str[0]] = -1;
+                    }
+                }
+                _a.label = 1;
             case 1:
-                tasks = _a.sent();
-                console.log(typeof (tasks));
-                res.send(tasks);
-                return [3 /*break*/, 3];
+                _a.trys.push([1, 3, , 4]);
+                // const tasks = await Task.find({'owner':req.user._id});
+                //The options object helps us to paginate data
+                //The limit value limits number of tasks returned by the top number of tasks as given here
+                //
+                return [4 /*yield*/, req.user.populate({
+                        path: 'tasks',
+                        match: match,
+                        options: {
+                            limit: parseInt(req.query.limit),
+                            skip: parseInt(req.query.skip),
+                            sort: sort
+                        },
+                    }).execPopulate()
+                    // console.log(typeof(tasks));
+                ];
             case 2:
+                // const tasks = await Task.find({'owner':req.user._id});
+                //The options object helps us to paginate data
+                //The limit value limits number of tasks returned by the top number of tasks as given here
+                //
+                _a.sent();
+                // console.log(typeof(tasks));
+                res.send(req.user.tasks);
+                return [3 /*break*/, 4];
+            case 3:
                 e_2 = _a.sent();
                 res.status(500).send(e_2);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
-taskRouter.get('/tasks/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+taskRouter.get('/tasks/:id', auth_1.default, function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var _id, task, e_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -107,7 +143,7 @@ taskRouter.get('/tasks/:id', function (req, res) { return __awaiter(_this, void 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, Task_1.default.findById(_id)];
+                return [4 /*yield*/, Task_1.default.findOne({ _id: _id, owner: req.user._id })];
             case 2:
                 task = _a.sent();
                 if (!task) {
@@ -123,7 +159,7 @@ taskRouter.get('/tasks/:id', function (req, res) { return __awaiter(_this, void 
         }
     });
 }); });
-taskRouter.patch("/tasks/:id", function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+taskRouter.patch("/tasks/:id", auth_1.default, function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var updates, allowedUpdates, isValid, task_1, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -137,7 +173,7 @@ taskRouter.patch("/tasks/:id", function (req, res) { return __awaiter(_this, voi
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, Task_1.default.findById(req.params.id)];
+                return [4 /*yield*/, Task_1.default.findOne({ _id: req.params.id, owner: req.user._id })];
             case 2:
                 task_1 = _a.sent();
                 if (!task_1) {
@@ -160,7 +196,7 @@ taskRouter.patch("/tasks/:id", function (req, res) { return __awaiter(_this, voi
     });
 }); });
 //Dont forget the:before id as it will cause an error in the working of node
-taskRouter.delete('/tasks/:id', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+taskRouter.delete('/tasks/:id', auth_1.default, function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var _id, task, e_5;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -169,7 +205,7 @@ taskRouter.delete('/tasks/:id', function (req, res) { return __awaiter(_this, vo
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, Task_1.default.findByIdAndDelete(_id)];
+                return [4 /*yield*/, Task_1.default.findOneAndDelete({ _id: req.params.id, owner: req.user._id })];
             case 2:
                 task = _a.sent();
                 console.log(req.params.id);

@@ -16,6 +16,10 @@ const TaskSchema:Schema = new Schema({
         ref:'User'//Creates a reference from this field to another model
 
     }
+},{ //This field is for schema options like timestamps or so
+
+        timestamps:true,
+
 })
 
 

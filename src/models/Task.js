@@ -23,6 +23,8 @@ var TaskSchema = new mongoose_1.Schema({
         required: true,
         ref: 'User' //Creates a reference from this field to another model
     }
+}, {
+    timestamps: true,
 });
 var Task = mongoose_1.default.model('Task', TaskSchema);
 exports.default = Task;
